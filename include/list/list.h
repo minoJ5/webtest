@@ -1,34 +1,58 @@
 #pragma once
 
 #include <iostream>
+#include <mutex>
+#include <shared_mutex>
 #include <string>
 #include <unordered_map>
+
+typedef unsigned long long undex;
 
 class Leaf {
  public:
   std::string name;
   int age;
   Leaf(std::string iname, int iage);
+
+ private:
+  mutable std::shared_mutex stream_lock;
 };
 
 class List {
+ private:
+  mutable std::shared_mutex stop_world;
  public:
-  unsigned long int size;
+  unsigned long long size;
 
-  struct Node {
-    Leaf data;
+  class Node {
+   public:
+    Leaf* data;
     struct Node* next;
     struct Node* prev;
-    Node(const Leaf& pdata) : data(pdata), next(nullptr), prev(nullptr) {}
+    Node(Leaf* pdata);
+
+   private:
+    mutable std::shared_mutex lock_;
   };
 
-  std::unordered_map<int, Node*> exists;
+  class Finder {
+   public:
+    bool find(undex seek);
+    void insert(undex seek, Node* node);
+    Node* get(undex seek);
+    void del(undex seek);
+    Finder() = default;
+
+   private:
+    std::unordered_map<undex, Node*> exists;
+    mutable std::shared_mutex stream_lock_;
+  };
+
+  struct Finder* finder;
 
   struct Node* head;
 
-  bool insert(const Leaf& p);
-
-  bool find_node_map(int seek);
+  bool insert(Leaf* p);
 
   struct Node* find_node(int seek);
 
