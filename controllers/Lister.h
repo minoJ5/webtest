@@ -1,12 +1,13 @@
 #pragma once
 
 #include <drogon/HttpController.h>
+#include <string>
 using namespace drogon;
 
 class Lister : public drogon::HttpController<Lister> {
  public:
   METHOD_LIST_BEGIN
-  METHOD_ADD(Lister::add_list, "/setlist", Get);
+  METHOD_ADD(Lister::add_list, "/setlist", Post);
   METHOD_ADD(Lister::clear_list, "/clearlist", Delete);
   METHOD_ADD(Lister::print_list, "/printlist", Get);
   METHOD_LIST_END

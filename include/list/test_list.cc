@@ -5,6 +5,8 @@
 #include <string>
 
 #include "list.h"
+
+using namespace Lineardb;
 int main() {
   using std::chrono::duration;
   using std::chrono::duration_cast;
@@ -37,8 +39,8 @@ int main() {
   LOG("allocating memory");
   auto t1 = high_resolution_clock::now();
   for (int i = 0; i < number; i++) {
-    Leaf p("mino", i);
-    l.insert(&p);
+    Leaf* p = new Leaf("mino", i);
+    l.insert(p);
   }
   auto t2 = high_resolution_clock::now();
   duration<double, std::milli> ms_double = t2 - t1;

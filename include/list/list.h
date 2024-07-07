@@ -5,22 +5,43 @@
 #include <shared_mutex>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
+namespace Lineardb {
 typedef unsigned long long undex;
+
+class DataVector {
+ public:
+  std::string name;
+  std::vector<std::string> data;
+
+ private:
+  mutable std::shared_mutex protect_data_;
+};
+
+class DataMatrix {
+ public:
+  std::string name;
+  std::vector<DataVector*> matrix;
+ private:
+  mutable std::shared_mutex block_;
+};
 
 class Leaf {
  public:
   std::string name;
   int age;
+  DataMatrix* data;
   Leaf(std::string iname, int iage);
 
  private:
-  mutable std::shared_mutex stream_lock;
+  mutable std::shared_mutex stream_lock_;
 };
 
 class List {
  private:
-  mutable std::shared_mutex stop_world;
+  mutable std::shared_mutex stop_world_;
+
  public:
   unsigned long long size;
 
@@ -68,3 +89,4 @@ class List {
 };
 
 void LOG(std::string message);
+}

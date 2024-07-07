@@ -1,24 +1,30 @@
 #include "Lister.h"
 
 #include "../include/common.h"
-unsigned long int number = 1000000;
+#include "../include/rapidjson/document.h"
+
+namespace ldb = Lineardb;
+
+unsigned long int number = 100;
 void Lister::add_list(
     const HttpRequestPtr &req,
     std::function<void(const HttpResponsePtr &)> &&callback) const {
+  auto b = req->getBody();
+  rapidjson::Document d;
+  d.Parse(std::string(b).c_str());
+  std::cout << d["ping"].GetString() << "\n";
   for (int i = 0; i < number; i++) {
-    Leaf *p = new Leaf("mino", i);
-    // std::cout << p << "\n";
+    ldb::Leaf *p = new ldb::Leaf("mino", i);
     bool ok = list.insert(p);
     if (!ok) {
       delete p;
     };
   }
-  // Leaf* p = new Leaf("mino", 29);
-  // list.insert(p);
-  // Leaf *p2 = new Leaf("mino", 28);
-  // list.insert(p2);
+  std::vector<int> v = {1, 2, 3};
   Json::Value ret;
-  ret["message"] = "Hello, World!";
+  ret["message"] = d["ping"].GetString();
+  ret["errors"] = "none";
+
   auto resp = HttpResponse::newHttpJsonResponse(ret);
   callback(resp);
 };

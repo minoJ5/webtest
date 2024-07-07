@@ -19,4 +19,4 @@ struct Branch {
 
 extern Branch branch;
 
-extern List list;
+extern Lineardb::List list;
